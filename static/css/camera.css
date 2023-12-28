@@ -1,0 +1,215 @@
+/* Variables */
+:root {
+    --main-background-color: #e3e3e3;
+    --main-text-color: #212121;
+    --button-background-color: #C2C2C2;
+}
+/* Estilos generales */
+body {
+    background-color: #e3e3e3;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+/* Contenedor de cámaras y categorías */
+.contenedor {
+    display: flex;
+}
+.form_camaras-container,
+.container_camaras-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+/* Cámaras */
+.container_camaras {
+    display: flex;
+    margin-top: 30px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    background-color: #C2C2C2;
+    width: 97.5rem;
+    justify-content: center;
+    position: relative;
+}
+.view-buttons {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.view-buttons button {
+    margin-right: 10px;
+    background-color: #9b9b9b;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #000;
+}
+
+.view-buttons button:hover {
+    background-color: #eee;
+}
+
+.item-list {
+    display: flex;
+    margin-top: 4rem;
+    margin-left: 5rem;
+    position: relative;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    height: 100%;
+}
+
+/* Estilos para el hover en la vista de cuadrícula */
+.grid-view .item {
+    max-width: 20rem;
+    margin: 2.5rem 4rem;
+    align-self: start;
+    position: relative; /* Añade posicionamiento relativo para el elemento principal */
+}
+
+.grid-view .item .item-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.grid-view img.imagenes {
+    border-radius: 10px;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.grid-view img.imagenes a.item-name {
+    max-width: 100%;
+}
+
+/* Añade estilos para el hover en la vista de cuadrícula */
+.grid-view .item::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -5px;
+    background-color: transparent;
+    border-radius: 10px;
+    pointer-events: none;
+    transition: background-color 0.3s ease;
+}
+
+/* Agrega estilos para el hover y la selección del elemento */
+.item:hover::before,
+.item.selected::before {
+    background-color: rgba(0, 0, 0, 0.18);
+}
+/* Agrega estilos para la selección del elemento */
+.item.selected {
+    border: 2px solid #007bff; /* Cambia el color del borde según tus preferencias */
+    border-radius: 10px;
+}
+/* Estilos para el hover en la vista de lista */
+.list-view .item {
+    position: relative;
+    flex-basis: 100%;
+    margin-left: 2rem;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 4rem;
+    /*position: relative; */
+    box-sizing: border-box;
+}
+
+.list-view img.imagenes {
+    border-radius: 10px;
+    height: 18rem;
+}
+
+.list-view img.imagenes a.item-name {
+    max-width: 100%;
+}
+.list-view .item .item-detail {
+    margin-left: 2rem;
+    font-size: 20px;
+    max-width: calc(70% - 2rem);
+    word-wrap: break-word;
+    flex-grow: 1;
+}
+.list-view .item .item-detail {
+    flex-grow: 1;
+}
+/* Añade estilos para el hover en la vista de lista */
+.list-view .item::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: 120px;
+    bottom: -20px;
+    background-color: transparent;
+    border-radius: 10px;
+    pointer-events: none;
+    transition: background-color 0.3s ease;
+}
+
+.list-view .item:hover::before {
+    background-color: rgba(0, 0, 0, 0.18);
+}
+
+
+/* BARRA DE CATEGORIAS */
+.form_camaras {
+    background-color: #9E9E9E;
+    margin-top: 30px;
+    margin-left: 30px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.categorias {
+    margin-top: 1rem;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.form_camaras select {
+    color: #212121;
+    text-align: left;
+    border-radius: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: #C2C2C2;
+    font-weight: bold;
+    padding: 10px;
+    border: none;
+}
+
+.form_camaras select option {
+    text-align: left;
+    padding: 5px;
+}
+
+.Siguiente {
+    font-weight: bold;
+    width: 194px;
+    color: #212121;
+    background-color: #C2C2C2;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 2rem;
+}

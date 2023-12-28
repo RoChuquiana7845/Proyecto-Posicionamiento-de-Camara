@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+          integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'css/camera.css' %}">
+</head>
+
+<body>
+    <div class="hero_area2">
+        <header class="header_section">
+            <div class="container">
+                <nav class="navbar navbar-expand-lg custom_nav-container pt-3">
+                    <a class="navbar-brand mr-5" id="enlaceIcon">
+                        <img src="{% static 'images/camera_icon.png' %}" alt="">
+                        <span>SPC</span>
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <div class="d-flex ml-auto flex-column flex-lg-row align-items-center">
+                            <ul class="navbar-nav">
+                                <li class="nav-item active">
+                                    <a class="nav-link" id="enlaceInicio">Inicio <span class="sr-only">(current)</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="enlaceAcerca">Acerca</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="enlaceServicio">Servicio</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="enlaceContacto">Contacto</a>
+                                </li>
+                            </ul>
+                            <form class="form-inline">
+                                <button class="btn my-2 my-sm-0 nav_search-btn" type="submit"></button>
+                            </form>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+    </div>
+
+    <div class="contenedor">
+        <!-- Contenedor de categorías y formulario de cámaras -->
+        <div class="form_camaras-container">
+            <form class="form_camaras">
+                <div class="form_container">
+                    <h2 class="categorias"> CATEGORIAS </h2>
+                    <div>
+                        <select id="camaras_tipo" name="tipo">
+                            <option value="" disable> 🟩 Tipo </option>
+                            {% for categoria in categorias_tipo %}
+                                <option value="{{ categoria }}">{{ categoria }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <select id="camaras_precio" name="precio">
+                            <option value="" disable> 🟦 Precio  </option>
+                            {% for categoria in categorias_precio %}
+                                <option value="{{ categoria }}">{{ categoria }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <select id="camaras_marca" name="marca">
+                            <option value="" disable> 🟨 Marca </option>
+                            {% for categoria in categorias_marca %}
+                                <option value="{{ categoria }}">{{ categoria }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <select id="camaras_resolucion" name="resolucion">
+                            <option value="" disable>🟧 Resolución </option>
+                            {% for categoria in categorias_resolucion %}
+                                <option value="{{ categoria }}">{{ categoria }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button class="Siguiente" id="Siguiente"> Siguiente </button>
+            </form>
+        </div>
+
+        <!-- Contenedor de cámaras -->
+        <div class="container_camaras-container">
+            <div class="container_camaras">
+                <div class="view-buttons">
+                    <button type="button" id="grid-active-btn">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button type="button" id="details-active-btn">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                </div>
+                <div class="item-list grid-view">
+                    <!-- Agrega la clase 'grid-view' a 'item-list' para la vista en cuadrícula -->
+                    {% for camara in camaras %}
+                        <div class="item" data-tipo="{{ camara.tipo }}" data-precio="{{ camara.precio }}"
+                             data-marca="{{ camara.marca }}" data-resolucion="{{ camara.resolucion }}"
+                             data-angulo-de-vision="{{ camara.angulo_de_vision }}">
+                            <div class="item-img">
+                                <img class="imagenes" src="{{ camara.imagen.url }}" alt="{{ camara.nombre }}">
+                            </div>
+                            <div class="item-detail">
+                                <a href="#" class="item-name">{{ camara.nombre }}</a>
+                                <div class="item-price">
+                                    <span class="new-price">${{ camara.precio }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+{#    BARRRA LATERAL FILTROS#}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Manejar cambios en los select
+        document.querySelectorAll('select').forEach(function (select) {
+            select.addEventListener('change', function () {
+                // Obtener los valores seleccionados
+                var tipo = document.getElementById('camaras_tipo').value;
+                var precio = document.getElementById('camaras_precio').value;
+                var marca = document.getElementById('camaras_marca').value;
+                var resolucion = document.getElementById('camaras_resolucion').value;
+
+                console.log('Tipo:', tipo);
+                console.log('Precio:', precio);
+                console.log('Marca:', marca);
+                console.log('Resolución:', resolucion);
+
+                // Filtrar los elementos de la lista basados en las selecciones
+                document.querySelectorAll('.item').forEach(function (item) {
+                    var camaraTipo = item.getAttribute('data-tipo');
+                    var camaraPrecio = item.getAttribute('data-precio');
+                    var camaraMarca = item.getAttribute('data-marca');
+                    var camaraResolucion = item.getAttribute('data-resolucion');
+
+                    console.log('Item - Tipo:', camaraTipo);
+                    console.log('Item - Precio:', camaraPrecio);
+                    console.log('Item - Marca:', camaraMarca);
+                    console.log('Item - Resolución:', camaraResolucion);
+
+                    // Verificar si coincide con las selecciones
+                    if ((!tipo || camaraTipo === tipo) &&
+                        (!precio || camaraPrecio === precio) &&
+                        (!marca || camaraMarca === marca) &&
+                        (!resolucion || camaraResolucion === resolucion)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Agregar evento de clic para cambiar la vista
+        document.getElementById('grid-active-btn').addEventListener('click', function () {
+            document.querySelector('.item-list').classList.remove('list-view');
+            document.querySelector('.item-list').classList.add('grid-view');
+        });
+
+        document.getElementById('details-active-btn').addEventListener('click', function () {
+            document.querySelector('.item-list').classList.remove('grid-view');
+            document.querySelector('.item-list').classList.add('list-view');
+        });
+    });
+</script>
+<script>
+    var anguloVisionValue; // Declarar la variable en el ámbito global
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Agregar evento de clic para cada elemento de la lista de cámaras
+        document.querySelectorAll('.item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                // Obtén el atributo 'data-angulo-de-vision' y guárdalo en la variable
+                anguloVisionValue = item.getAttribute('data-angulo-de-vision');
+
+                // Hacer algo con el atributo anguloVision (puedes mostrarlo en la consola por ahora)
+                console.log('Ángulo de Visión:', anguloVisionValue);
+
+                // Toggle de la clase 'selected' directamente en el elemento
+                item.classList.toggle('selected');
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtén una referencia al enlace
+        var enlaceRedireccionar = document.getElementById('Siguiente');
+
+        // Agrega un escuchador de eventos para el clic en el enlace
+        enlaceRedireccionar.addEventListener('click', function (event) {
+            // Detén el comportamiento predeterminado del enlace para evitar la navegación estándar
+            event.preventDefault();
+
+            // Redirige a la otra página con el valor de anguloVisionValue como parámetro de consulta
+            window.location.href = '/disenoPlanos/?anguloVision=' + anguloVisionValue;
+        });
+    });
+</script>
+
+
+{#    BOTONES DEL NAVBAR#}
+<script>
+    // Asegúrate de que los enlaces estén disponibles después de que se cargue la página
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtén referencias a los enlaces
+        var enlaceInicio = document.getElementById('enlaceInicio');
+        var enlaceAcerca = document.getElementById('enlaceAcerca');
+        var enlaceServicio = document.getElementById('enlaceServicio');
+        var enlaceContacto = document.getElementById('enlaceContacto');
+
+        // Agrega escuchadores de eventos para el clic en los enlaces
+        enlaceIcon.addEventListener('click', redireccionar);
+        enlaceInicio.addEventListener('click', redireccionar);
+        enlaceAcerca.addEventListener('click', redireccionar);
+        enlaceServicio.addEventListener('click', redireccionar);
+        enlaceContacto.addEventListener('click', redireccionar);
+
+        function redireccionar(event) {
+            // Detén el comportamiento predeterminado del enlace para evitar la navegación estándar
+            event.preventDefault();
+
+            // Redirige a la otra página
+            window.location.href = '/';
+        }
+    });
+</script>
+</body>
+</html>

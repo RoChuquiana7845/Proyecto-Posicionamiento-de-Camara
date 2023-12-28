@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <!-- Basic -->
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <!-- Site Metas -->
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+
+    <title>SPC</title>
+
+    <!-- slider stylesheet -->
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.3/assets/owl.carousel.min.css"/>
+
+    <!-- font awesome stylesheet -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+    <!-- bootstrap core css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+
+    <!-- fonts style -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet"/>
+    <!-- responsive style -->
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/disenoPlano.css' %}" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="hero_area2">
+    <!-- header section strats -->
+    <header class="header_section">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg custom_nav-container pt-3">
+                <a class="navbar-brand mr-5" id="enlaceIcon">
+                    <img src="{% static 'images/camera_icon.png' %}" alt="">
+                    <span>
+              SPC
+            </span>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <div class="d-flex ml-auto flex-column flex-lg-row align-items-center">
+                        <ul class="navbar-nav">
+                            <li class="nav-item active">
+                                <a class="nav-link" id="enlaceInicio">Inicio <span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="enlaceAcerca"> Acerca </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="enlaceServicio"> Servicio </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="enlaceContacto">Contacto</a>
+                            </li>
+                        </ul>
+                        <form class="form-inline">
+                            <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit"></button>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+</div>
+
+<section>
+    <div class="fondo">
+        <div class="menu_planos">
+            <div class="subir_plano">
+                <!-- Formulario oculto -->
+                <form id="subirPlanoForm" method="post" enctype="multipart/form-data" class="">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <label for="imagenInput" class="custom-file-input-button">Seleccionar Imagen</label>
+                </form>
+            </div>
+            <input type="hidden" id="anguloVisionInput" name="anguloVision" value="">
+            <button class="terminar_plano" type="submit" id="terminarPlanoBtn">Enviar Plano</button>
+            <button class="dibujar_habitacion">🟥 Dibujar Habitacion</button>
+            <button class="colocar_ventana">🟧 Colocar Ventana</button>
+            <button class="dibujar_pared">🟨 Dibujar Pared</button>
+            <button class="definir_habitacion">🟩 Definir Habitacion</button>
+            <button class="colocar_puerta">🟦 Colocar Puerta</button>
+        </div>
+        <div class="plano"></div>
+    </div>
+</section>
+<script>
+    // Asegúrate de que los enlaces estén disponibles después de que se cargue la página
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtén referencias a los enlaces
+        var enlaceInicio = document.getElementById('enlaceInicio');
+        var enlaceAcerca = document.getElementById('enlaceAcerca');
+        var enlaceServicio = document.getElementById('enlaceServicio');
+        var enlaceContacto = document.getElementById('enlaceContacto');
+
+        // Agrega escuchadores de eventos para el clic en los enlaces
+        enlaceIcon.addEventListener('click', redireccionar);
+        enlaceInicio.addEventListener('click', redireccionar);
+        enlaceAcerca.addEventListener('click', redireccionar);
+        enlaceServicio.addEventListener('click', redireccionar);
+        enlaceContacto.addEventListener('click', redireccionar);
+
+        function redireccionar(event) {
+            // Detén el comportamiento predeterminado del enlace para evitar la navegación estándar
+            event.preventDefault();
+
+            // Redirige a la otra página
+            window.location.href = '/';
+        }
+    });
+</script>
+
+<script>
+    // Agrega un escuchador de eventos para el clic en el botón "Terminar Plano"
+    document.getElementById('terminarPlanoBtn').addEventListener('click', function () {
+        // Simula un clic en el botón de envío del formulario cuando se hace clic en "Terminar Plano"
+        document.getElementById('subirPlanoForm').submit();
+    });
+</script>
+<script>
+    // Asegúrate de que el script se ejecute después de que se cargue la página
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtén una referencia al elemento de entrada de imagen, al div de fondo y al formulario
+        var imagenInput = document.getElementById('imagenInput');
+        var fondoDiv = document.querySelector('.plano');
+        var subirPlanoForm = document.getElementById('subirPlanoForm');
+
+        // Agrega un escuchador de eventos para el cambio en el input de imagen
+        imagenInput.addEventListener('change', function () {
+            // Verifica si se seleccionó un archivo
+            if (imagenInput.files.length > 0) {
+                // Crea una URL de objeto para la imagen cargada
+                var imageUrl = URL.createObjectURL(imagenInput.files[0]);
+
+                // Asigna la imagen como fondo del div de fondo
+                fondoDiv.style.backgroundImage = 'url("' + imageUrl + '")';
+            }
+        });
+
+        // Agrega un escuchador de eventos para el clic en el botón "Enviar Plano"
+        document.getElementById('terminarPlanoBtn').addEventListener('click', function () {
+            // Asigna el valor del ángulo al campo oculto
+            document.getElementById('anguloVisionInput').value = anguloVisionValue;
+
+            // Simula un clic en el botón de envío del formulario cuando se hace clic en "Enviar Plano"
+            subirPlanoForm.submit();
+        });
+    });
+</script>
+</body>
+</html>
