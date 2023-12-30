@@ -1,5 +1,5 @@
 # posicionCamaras/views.py
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Posicion
 from django.http import JsonResponse
 from apps.disenoPlanos.models import Planos
@@ -116,56 +116,64 @@ def calculate_best_corner_position(width, height):
     return calculate_random_position(width, height)
 
 def posicion_camaras(request, id_plano, id_camara):
-    measurements_dict = get_measurements(request, id_plano)
-    measurements = measurements_dict['measurements']
-    width_str = measurements['Medidas en X'][0]
-    height_str = measurements['Medidas en Y'][0]
+    try:
+        measurements_dict = get_measurements(request, id_plano)
+        measurements = measurements_dict['measurements']
+        width_str = measurements['Medidas en X'][0]
+        height_str = measurements['Medidas en Y'][0]
 
-    # Extraer los números y convertirlos a enteros
-    width = int(width_str.split('cm')[0])
-    height = int(height_str.split('cm')[0])
+        # Extraer los números y convertirlos a enteros
+        width = int(width_str.split('cm')[0])
+        height = int(height_str.split('cm')[0])
 
-    camera = Camara.objects.get(id=id_camara)
-    camera_coverage = get_camera_coverage(camera)
+        camera = Camara.objects.get(id=id_camara)
+        camera_coverage = get_camera_coverage(camera)
 
-    area = width * height
-    num_cameras = np.floor(area / camera_coverage).astype(int)
+        area = width * height
+        num_cameras = np.floor(area / camera_coverage).astype(int)
 
-    if num_cameras >= 1:
-        camera_positions = calculate_best_corner_position(width, height)
-    else:
-        camera_positions = []
+        if num_cameras >= 1:
+            camera_positions = calculate_best_corner_position(width, height)
+        else:
+            camera_positions = []
 
-    # Convertir camera_positions a una lista de Python y luego a un diccionario
-    camera_positions_list = camera_positions.tolist()
-    camera_positions_dict = {'camera_positions': camera_positions_list, 'house': {'width': width, 'height': height}}
+        # Convertir camera_positions a una lista de Python y luego a un diccionario
+        camera_positions_list = camera_positions.tolist()
+        camera_positions_dict = {'camera_positions': camera_positions_list, 'house': {'width': width, 'height': height}}
 
-    return camera_positions_dict
+        return camera_positions_dict
+    except IndexError:
+        return redirect('disenoPlanos')
+
 
 def generar_plano(request, id_plano, id_camara): 
-    measurements_camara_house = posicion_camaras(request, id_plano, id_camara)
-    fig, ax = plt.subplots()
-    ax.add_patch(plt.Rectangle((0,0), measurements_camara_house['house']['width'], measurements_camara_house['house']['height'], fill=None, edgecolor='black'))
-    
-    camera_positions = measurements_camara_house['camera_positions']
-    for position in camera_positions:
-        if position[0] == 0 and position[1] == 0:  # Si la posición es una esquina
-            ax.plot(position[0], position[1], 'ro', markersize=15)  # Aumenta el tamaño en un 25%
-        else:
-            ax.plot(position[0], position[1], 'ro')
-    
-    ax.set_xlim([0, measurements_camara_house['house']['width']])
-    ax.set_ylim([0, measurements_camara_house['house']['height']])
-    
-    # Establecer las marcas en los ejes x e y para que estén separadas por 10 unidades
-    ax.set_xticks(np.arange(0, measurements_camara_house['house']['width'], 20))
-    ax.set_yticks(np.arange(0, measurements_camara_house['house']['height'], 20))
-    
-    plt.savefig('static/images/plano_with_cameras.png')
-    
-    return render(request, 'prueba.html', {
-        'image_path': 'images/plano_with_cameras.png',
-    })
+    try:
+        measurements_camara_house = posicion_camaras(request, id_plano, id_camara)
+        fig, ax = plt.subplots()
+        ax.add_patch(plt.Rectangle((0,0), measurements_camara_house['house']['width'], measurements_camara_house['house']['height'], fill=None, edgecolor='black'))
+        
+        camera_positions = measurements_camara_house['camera_positions']
+        for position in camera_positions:
+            if position[0] == 0 and position[1] == 0:  # Si la posición es una esquina
+                ax.plot(position[0], position[1], 'ro', markersize=15)  # Aumenta el tamaño en un 25%
+            else:
+                ax.plot(position[0], position[1], 'ro')
+        
+        ax.set_xlim([0, measurements_camara_house['house']['width']])
+        ax.set_ylim([0, measurements_camara_house['house']['height']])
+        
+        # Establecer las marcas en los ejes x e y para que estén separadas por 10 unidades
+        ax.set_xticks(np.arange(0, measurements_camara_house['house']['width'], 20))
+        ax.set_yticks(np.arange(0, measurements_camara_house['house']['height'], 20))
+        
+        plt.savefig('static/images/plano_with_cameras.png')
+        
+        return render(request, 'prueba.html', {
+            'image_path': 'images/plano_with_cameras.png',
+        })
+    except KeyError:
+        print('Intenta con una foto menos borrosa')
+        return redirect('disenoPlanos')
 
 def calcular_posicion_optima(ancho_casa, alto_casa):
     
