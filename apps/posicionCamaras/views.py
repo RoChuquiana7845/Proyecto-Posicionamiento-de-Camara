@@ -6,6 +6,7 @@ from apps.disenoPlanos.models import Planos
 from apps.camaras.models import Camara
 import cv2
 import numpy as np
+import re
 from sklearn.cluster import KMeans
 from django.http import JsonResponse
 import pytesseract
@@ -18,9 +19,28 @@ def process_image_vertical(image_path):
     # Cargar la imagen en escala de grises
     img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
-    # Rotar la imagen 90 grados a la derecha
-    img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    # Crear dos copias de la imagen, una rotada a la derecha y otra a la izquierda
+    img_right = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    img_left = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
 
+    # Aplicar el mismo procesamiento a ambas imágenes
+    measurements_right = process_image(img_right)
+    measurements_left = process_image(img_left)
+    
+    # Comparar los resultados y devolver el mejor
+    if measurements_right and measurements_left:
+        if max(measurements_right) > max(measurements_left):
+            return measurements_right
+        else:
+            return measurements_left
+    elif measurements_right:
+        return measurements_right
+    elif measurements_left:
+        return measurements_left
+    else:
+        return []
+
+def process_image(img):
     # Aplicar umbralización
     _, img = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY)
 
@@ -29,19 +49,25 @@ def process_image_vertical(image_path):
     img = cv2.dilate(img, kernel, iterations=1)
     img = cv2.erode(img, kernel, iterations=1)
 
-    # Configurar Tesseract para reconocer solo números 0-9 y la letra y 'm'
-    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789m'
+    # Configurar Tesseract para reconocer solo números 0-9 y las letras 'c' y 'm'
+    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789cm'
     text = pytesseract.image_to_string(img, config=custom_config)
+    print(text)
+    # Usar una expresión regular para extraer las mediciones
+    measurements = re.findall(r'\d+cm', text)
 
-    # Dividir el texto en líneas y filtrar las que contienen 'cm'
-    measurements = [line for line in text.split('\n') if 'm' in line]
+    # Aquí es donde se aplica la solución
+    measurements_numeros = []
+    for s in measurements:
+        s = s.replace('cm', '')
+        if s.isdigit():
+            measurements_numeros.append(int(s))
 
-    # Eliminar el 'cm' y convertir a entero
-    measurements_numeros = [int(s.replace('m', '')) for s in measurements]
     # Ordenar de mayor a menor
     measurements_ordenadas = sorted(measurements_numeros, reverse=True)
+
     # Convertir de nuevo a cadena con 'cm'
-    measurements_final = [str(s) + 'm' for s in measurements_ordenadas]
+    measurements_final = [str(s) + 'cm' for s in measurements_ordenadas]
 
     return measurements_final
 
@@ -57,20 +83,26 @@ def process_image_horizontal(image_path):
     img = cv2.dilate(img, kernel, iterations=1)
     img = cv2.erode(img, kernel, iterations=1)
 
-    # Configurar Tesseract para reconocer solo números 0-9 y las letra 'm'
-    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789m'
+    # Configurar Tesseract para reconocer solo números 0-9 y las letras 'c' y 'm'
+    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789cm'
     text = pytesseract.image_to_string(img, config=custom_config)
     text = text.replace('4', '1')
 
-    # Dividir el texto en palabras y filtrar las que contienen 'm'
-    measurements = [word for word in text.split() if 'm' in word]
-    
-    # Eliminar el 'cm' y convertir a entero
-    measurements_numeros = [int(s.replace('m', '')) for s in measurements]
+    # Dividir el texto en palabras y filtrar las que contienen 'cm'
+    measurements = [word for word in text.split() if 'cm' in word]
+
+    # Aquí es donde se aplica la solución
+    measurements_numeros = []
+    for s in measurements:
+        s = s.replace('cm', '')
+        if s.isdigit():
+            measurements_numeros.append(int(s))
+
     # Ordenar de mayor a menor
     measurements_ordenadas = sorted(measurements_numeros, reverse=True)
-    # Convertir de nuevo a cadena con 'm'
-    measurements_final = [str(s) + 'm' for s in measurements_ordenadas]
+
+    # Convertir de nuevo a cadena con 'cm'
+    measurements_final = [str(s) + 'cm' for s in measurements_ordenadas]
 
     return measurements_final
 
@@ -89,7 +121,7 @@ def get_measurements(request, id_plano):
             'Medidas en Y': measurements_in_y,
             'Medidas en X': measurements_in_x
         }
-        
+        print(measurements)
         return {"measurements": measurements}
     except Planos.DoesNotExist:
         # Manejar el caso cuando el plano no se encuentra
