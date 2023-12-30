@@ -29,19 +29,19 @@ def process_image_vertical(image_path):
     img = cv2.dilate(img, kernel, iterations=1)
     img = cv2.erode(img, kernel, iterations=1)
 
-    # Configurar Tesseract para reconocer solo números 0-9 y las letras 'c' y 'm'
-    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789cm'
+    # Configurar Tesseract para reconocer solo números 0-9 y la letra y 'm'
+    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789m'
     text = pytesseract.image_to_string(img, config=custom_config)
 
     # Dividir el texto en líneas y filtrar las que contienen 'cm'
-    measurements = [line for line in text.split('\n') if 'cm' in line]
+    measurements = [line for line in text.split('\n') if 'm' in line]
 
     # Eliminar el 'cm' y convertir a entero
-    measurements_numeros = [int(s.replace('cm', '')) for s in measurements]
+    measurements_numeros = [int(s.replace('m', '')) for s in measurements]
     # Ordenar de mayor a menor
     measurements_ordenadas = sorted(measurements_numeros, reverse=True)
     # Convertir de nuevo a cadena con 'cm'
-    measurements_final = [str(s) + 'cm' for s in measurements_ordenadas]
+    measurements_final = [str(s) + 'm' for s in measurements_ordenadas]
 
     return measurements_final
 
@@ -57,20 +57,20 @@ def process_image_horizontal(image_path):
     img = cv2.dilate(img, kernel, iterations=1)
     img = cv2.erode(img, kernel, iterations=1)
 
-    # Configurar Tesseract para reconocer solo números 0-9 y las letras 'c' y 'm'
-    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789cm'
+    # Configurar Tesseract para reconocer solo números 0-9 y las letra 'm'
+    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789m'
     text = pytesseract.image_to_string(img, config=custom_config)
     text = text.replace('4', '1')
 
-    # Dividir el texto en palabras y filtrar las que contienen 'cm'
-    measurements = [word for word in text.split() if 'cm' in word]
+    # Dividir el texto en palabras y filtrar las que contienen 'm'
+    measurements = [word for word in text.split() if 'm' in word]
     
     # Eliminar el 'cm' y convertir a entero
-    measurements_numeros = [int(s.replace('cm', '')) for s in measurements]
+    measurements_numeros = [int(s.replace('m', '')) for s in measurements]
     # Ordenar de mayor a menor
     measurements_ordenadas = sorted(measurements_numeros, reverse=True)
-    # Convertir de nuevo a cadena con 'cm'
-    measurements_final = [str(s) + 'cm' for s in measurements_ordenadas]
+    # Convertir de nuevo a cadena con 'm'
+    measurements_final = [str(s) + 'm' for s in measurements_ordenadas]
 
     return measurements_final
 
